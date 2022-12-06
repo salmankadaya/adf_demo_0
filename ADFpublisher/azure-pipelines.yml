@@ -90,3 +90,88 @@ stages:
               vstsFeedPackagePublish: '$(feedname_dev)'
               packagePublishDescription: 'ADF in Dev Environment'
               verbosity: 'Debug'
+#################
+#RELEASE STAGE
+#################
+  - stage: ADF_DEV
+    displayName: Deploying ADF in DEV
+    dependsOn: Build_ADF_Dev
+    condition: succeeded('Build_ADF_Dev')
+    jobs:
+      - job: Deploytodev
+        pool:
+          name: Default
+        
+        steps:
+                - task: UniversalPackages@0
+                  displayName: 'Downloading latest ADF Artifact'
+                  inputs:
+                    command: 'download'
+                    vstsFeed: 'adf_demo/$(feedname_dev)'
+                    vstsFeedPackage: '$(feedname_dev)'
+                    vstsPackageVersion: '*'
+                    downloadDirectory: '$(System.DefaultWorkingDirectory)'
+                    verbosity: 'Debug'
+                - powershell: |
+                    tree "$(System.DefaultWorkingDirectory)" /F
+                  displayName: 'Treeview of System.DefaultWorkingDirectory'
+                - task: DownloadSecureFile@1
+                  name: adfparameter
+                  displayName: 'Download Parameters from secure files'
+                  inputs:
+                    secureFile: ARMTemplateParametersForFactorydev.json
+                - pwsh: |
+                    Copy-Item "$(adfParameter.secureFilePath)" -Destination "$(System.DefaultWorkingDirectory)/$(TargetFolder)"
+                    Remove-Item ARMTemplateParametersForFactory.json
+                    Rename-Item -Path ARMTemplateParametersForFactorydev.json -NewName ARMTemplateParametersForFactory.json
+                  workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
+                  displayName: Replace ARM Template Parameters
+                - pwsh: |
+                    (Get-Content $(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json) -Replace '"type": "ManagedIdentity"', '"type": "SystemAssigned"' | Set-Content $(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json
+                  workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
+                  displayName: Replace Managed Identity to System Assigned
+          #stop trigger
+#                 - task: AzurePowerShell@5
+#                   inputs:
+#                     azureSubscription: 'dep-service-connection'
+#                     ScriptType: 'InlineScript'
+#                     Inline: 'Uninstall-AzureRm'
+#                     azurePowerShellVersion: 'LatestVersion'
+#                     workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
+                    
+#                 - task: AzurePowerShell@5
+#                   displayName: Stop Trigger
+#                   inputs:
+#                     pwsh: true 
+#                     azureSubscription: $(myserviceconnection)
+#                     workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
+#                     azurePowerShellVersion: 'LatestVersion'
+#                     ScriptPath: '$(System.DefaultWorkingDirectory)/$(TargetFolder)/PrePostDeploymentScript.ps1'
+#                     ScriptArguments: -armTemplate "$(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json" -ResourceGroupName $(resourcegroup_dev) -DataFactoryName $(adfname_dev) -predeployment $true -deleteDeployment $false
+                          
+          
+
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: 'Deploying to Dev ADF'
+                  inputs:
+                    deploymentScope: Resource Group
+                    azureResourceManagerConnection: $(myserviceconnection)
+                    subscriptionId: $(subscriptionid)
+                    action: Create Or Update Resource Group
+                    resourceGroupName: $(resourcegroup_dev)
+                    location: $(location_dev)
+                    templateLocation: Linked artifact
+                    csmFile: '$(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json'
+                    csmParametersFile: '$(System.DefaultWorkingDirectory)/application/ARMTemplateParametersForFactory.json'
+                    deploymentMode: Incremental
+            #start Trigger
+#                 - task: AzurePowerShell@5
+#                   displayName: Start Trigger
+#                   inputs:
+#                     pwsh: true 
+#                     azureSubscription: $(myserviceconnection)
+#                     workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
+#                     azurePowerShellVersion: 'LatestVersion'
+#                     ScriptPath: '$(System.DefaultWorkingDirectory)/$(TargetFolder)/PrePostDeploymentScript.ps1'
+#                     ScriptArguments: -armTemplate "$(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json" -ResourceGroupName $(resourcegroup_dev) -DataFactoryName $(adfname_dev) -predeployment $false -deleteDeployment $true
+                   
