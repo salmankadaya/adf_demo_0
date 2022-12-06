@@ -1,0 +1,9 @@
+{
+	"name": "adf-rg-dev",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "7fd1e42a-f91e-4d95-833e-4a8d6297f06c",
+		"tenantId": "2faec555-5c8c-436c-80c9-5f78a550e924"
+	}
+}
