@@ -86,7 +86,7 @@ stages:
             inputs:
               command: publish
               publishDirectory: '$(build.artifactstagingdirectory)'
-              vstsFeedPublish: 'adf-demo/$(feedname_dev)'
+              vstsFeedPublish: 'adf_demo/$(feedname_dev)'
               vstsFeedPackagePublish: '$(feedname_dev)'
               packagePublishDescription: 'ADF in Dev Environment'
               verbosity: 'Debug'
