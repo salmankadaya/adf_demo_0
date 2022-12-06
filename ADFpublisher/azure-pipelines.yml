@@ -1,22 +1,20 @@
-trigger:
-  branches:
-    include:
-    - main
-    - develop
+#trigger:
+#  branches:
+#    include:
+#    - main
+#    - develop
 
-  paths:
-    include:
-    - ADFpublisher
+#   paths:
+#     include:
+#     - ADFpublisher
 
 variables:
-- group: adf-var-group
-- name: isDev
-  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
-- name: isMain
-  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
-  
+ - group: adf-var-group
+# - name: isDev
+#   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
+# - name: isMain
+#   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
-  
 pool:
   name: Default
 # Installs Node and the npm packages saved in your package.json file in the build
@@ -28,13 +26,13 @@ pool:
 
 stages:
   - stage: Build_ADF_Dev
-    condition: eq(variables.isDev, true)
+#    condition: eq(variables.isDev, true)
     displayName: Build ADF artifact in Dev
     jobs:
       - job: Creating
         displayName: "Creating Artifact"
         pool:
-          vmImage: 'windows-latest'
+          name: Default
         steps:
           - task: NodeTool@0
             inputs:
@@ -91,73 +89,4 @@ stages:
               vstsFeedPublish: 'adf-demo/$(feedname_dev)'
               vstsFeedPackagePublish: '$(feedname_dev)'
               packagePublishDescription: 'ADF in Dev Environment'
-              verbosity: 'Debug'
-
-#################  
-#BUILD FOR MAIN
-#################
-
-
-  - stage: Build_ADF_Prod
-    condition: eq(variables.isMain, true)
-    displayName: Build ADF artifact in main
-    jobs:
-      - job: Creating
-        displayName: "Creating Artifact"
-        pool:
-          vmImage: 'windows-latest'
-        steps:
-          - task: NodeTool@0
-            inputs:
-              versionSpec: '14.x'
-            displayName: 'Install Node.js'
-
-          - task: Npm@1
-            inputs:
-              command: 'install'
-              workingDir: '$(Build.Repository.LocalPath)/$(workingDir)' 
-              verbose: true
-            displayName: 'Install npm package'
-
-# Validates all of the Data Factory resources in the repository. You'll get the same validation errors as when "Validate All" is selected.
-# Enter the appropriate subscription and name for the source factory.
-
-          - task: Npm@1
-            inputs:
-              command: 'custom'
-              workingDir: '$(Build.Repository.LocalPath)/$(workingDir)' #package.json folder
-              customCommand: 'run build validate $(Build.Repository.LocalPath)/$(workingDir) /subscriptions/$(subscriptionid)/resourceGroups/$(resourcegroup_prod)/providers/Microsoft.DataFactory/factories/$(adfname_prod)'
-            displayName: 'Validate'
-
-# Validate and then generate the ARM template into the destination folder, which is the same as selecting "Publish" from the UX.
-# The ARM template generated isn't published to the live version of the factory. Deployment should be done by using a CI/CD pipeline. 
-
-          - task: Npm@1
-            inputs:
-              command: 'custom'
-              workingDir: '$(Build.Repository.LocalPath)/$(workingDir)'
-              customCommand: 'run build export $(Build.Repository.LocalPath)/$(workingDir) /subscriptions/$(subscriptionid)/resourceGroups/$(resourcegroup_prod)/providers/Microsoft.DataFactory/factories/$(adfname_prod) artifacts'  
-            displayName: 'Validate and Generate ARM template'
-
-# Publish the artifact to be used as a source for a release pipeline.
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(Build.Repository.LocalPath)/$(SourceFolder)'
-              Contents: '**'
-              TargetFolder: '$(build.artifactstagingdirectory)/$(TargetFolder)'
-            displayName: 'Copying application artifact'
-
-          - task: PublishPipelineArtifact@1
-            inputs:
-              targetPath: '$(build.artifactstagingdirectory)'
-              artifact: 'datafactory'
-              publishLocation: 'pipeline'
-          - task: UniversalPackages@0
-            displayName: "Publishing to AzDO Artifacts in Prod"
-            inputs:
-              command: publish
-              publishDirectory: '$(build.artifactstagingdirectory)'
-              vstsFeedPublish: 'adf-Demo/$(feedname_prod)'
-              vstsFeedPackagePublish: '$(feedname_prod)'
-              packagePublishDescription: 'ADF in Prod Environment'
               verbosity: 'Debug'
