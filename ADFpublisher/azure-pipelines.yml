@@ -18,7 +18,7 @@ variables:
 
   
 pool:
-  vmImage: 'windows-latest'
+  name: Default
 # Installs Node and the npm packages saved in your package.json file in the build
 
 ################
