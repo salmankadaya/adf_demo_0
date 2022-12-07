@@ -145,12 +145,11 @@ stages:
                     pwsh: true 
                     azureSubscription: $(myserviceconnection)
                     workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
-                    azurePowerShellVersion: 'LatestVersion'
+                    azurePowerShellVersion: 'OtherVersion'
+                    preferredAzurePowerShellVersion: 7.3.0
                     ScriptPath: '$(System.DefaultWorkingDirectory)/$(TargetFolder)/PrePostDeploymentScript.ps1'
                     ScriptArguments: -armTemplate "$(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json" -ResourceGroupName $(resourcegroup_dev) -DataFactoryName $(adfname_dev) -predeployment $true -deleteDeployment $false
                           
-          
-
                 - task: AzureResourceManagerTemplateDeployment@3
                   displayName: 'Deploying to Dev ADF'
                   inputs:
