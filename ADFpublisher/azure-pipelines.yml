@@ -120,13 +120,13 @@ stages:
                   displayName: 'Download Parameters from secure files'
                   inputs:
                     secureFile: ARMTemplateParametersForFactorydev.json
-                - pwsh: |
+                - powershell: |
                     Copy-Item "$(adfParameter.secureFilePath)" -Destination "$(System.DefaultWorkingDirectory)/$(TargetFolder)"
                     Remove-Item ARMTemplateParametersForFactory.json
                     Rename-Item -Path ARMTemplateParametersForFactorydev.json -NewName ARMTemplateParametersForFactory.json
                   workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
                   displayName: Replace ARM Template Parameters
-                - pwsh: |
+                - powershell: |
                     (Get-Content $(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json) -Replace '"type": "ManagedIdentity"', '"type": "SystemAssigned"' | Set-Content $(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json
                   workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
                   displayName: Replace Managed Identity to System Assigned
