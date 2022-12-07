@@ -141,6 +141,41 @@
 				"[concat(variables('factoryId'), '/datasets/ds_input_copy_task')]",
 				"[concat(variables('factoryId'), '/datasets/ds_output_copy_task')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copy_task_trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "copy_task",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Month",
+						"interval": 1,
+						"startTime": "2022-12-07T11:20:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"monthDays": [
+								1
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/copy_task')]"
+			]
 		}
 	]
 }
