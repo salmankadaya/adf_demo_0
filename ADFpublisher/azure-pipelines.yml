@@ -145,8 +145,8 @@ stages:
                     pwsh: true 
                     azureSubscription: $(myserviceconnection)
                     workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
-                    azurePowerShellVersion: 'OtherVersion'
-                    preferredAzurePowerShellVersion: 5.1.0
+                    azurePowerShellVersion: 'LatestVersion'
+                    #preferredAzurePowerShellVersion: 5.1.0
                     ScriptPath: '$(System.DefaultWorkingDirectory)/$(TargetFolder)/PrePostDeploymentScript.ps1'
                     ScriptArguments: -armTemplate "$(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json" -ResourceGroupName $(resourcegroup_dev) -DataFactoryName $(adfname_dev) -predeployment $true -deleteDeployment $false
                           
