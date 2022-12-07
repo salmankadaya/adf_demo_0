@@ -131,13 +131,13 @@ stages:
                   workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
                   displayName: Replace Managed Identity to System Assigned
           #stop trigger
-                - task: AzurePowerShell@5
-                  inputs:
-                    azureSubscription: $(myserviceconnection)
-                    ScriptType: 'InlineScript'
-                    Inline: 'Uninstall-AzureRm'
-                    azurePowerShellVersion: 'LatestVersion'
-                    workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
+#                 - task: AzurePowerShell@5
+#                   inputs:
+#                     azureSubscription: $(myserviceconnection)
+#                     ScriptType: 'InlineScript'
+#                     Inline: 'Uninstall-AzureRm'
+#                     azurePowerShellVersion: 'LatestVersion'
+#                     workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
                     
                 - task: AzurePowerShell@5
                   displayName: Stop Trigger
