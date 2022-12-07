@@ -131,23 +131,23 @@ stages:
                   workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
                   displayName: Replace Managed Identity to System Assigned
           #stop trigger
-#                 - task: AzurePowerShell@5
-#                   inputs:
-#                     azureSubscription: 'dep-service-connection'
-#                     ScriptType: 'InlineScript'
-#                     Inline: 'Uninstall-AzureRm'
-#                     azurePowerShellVersion: 'LatestVersion'
-#                     workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
+                - task: AzurePowerShell@5
+                  inputs:
+                    azureSubscription: $(myserviceconnection)
+                    ScriptType: 'InlineScript'
+                    Inline: 'Uninstall-AzureRm'
+                    azurePowerShellVersion: 'LatestVersion'
+                    workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
                     
-#                 - task: AzurePowerShell@5
-#                   displayName: Stop Trigger
-#                   inputs:
-#                     pwsh: true 
-#                     azureSubscription: $(myserviceconnection)
-#                     workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
-#                     azurePowerShellVersion: 'LatestVersion'
-#                     ScriptPath: '$(System.DefaultWorkingDirectory)/$(TargetFolder)/PrePostDeploymentScript.ps1'
-#                     ScriptArguments: -armTemplate "$(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json" -ResourceGroupName $(resourcegroup_dev) -DataFactoryName $(adfname_dev) -predeployment $true -deleteDeployment $false
+                - task: AzurePowerShell@5
+                  displayName: Stop Trigger
+                  inputs:
+                    pwsh: true 
+                    azureSubscription: $(myserviceconnection)
+                    workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
+                    azurePowerShellVersion: 'LatestVersion'
+                    ScriptPath: '$(System.DefaultWorkingDirectory)/$(TargetFolder)/PrePostDeploymentScript.ps1'
+                    ScriptArguments: -armTemplate "$(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json" -ResourceGroupName $(resourcegroup_dev) -DataFactoryName $(adfname_dev) -predeployment $true -deleteDeployment $false
                           
           
 
@@ -165,13 +165,13 @@ stages:
                     csmParametersFile: '$(System.DefaultWorkingDirectory)/application/ARMTemplateParametersForFactory.json'
                     deploymentMode: Incremental
             #start Trigger
-#                 - task: AzurePowerShell@5
-#                   displayName: Start Trigger
-#                   inputs:
-#                     pwsh: true 
-#                     azureSubscription: $(myserviceconnection)
-#                     workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
-#                     azurePowerShellVersion: 'LatestVersion'
-#                     ScriptPath: '$(System.DefaultWorkingDirectory)/$(TargetFolder)/PrePostDeploymentScript.ps1'
-#                     ScriptArguments: -armTemplate "$(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json" -ResourceGroupName $(resourcegroup_dev) -DataFactoryName $(adfname_dev) -predeployment $false -deleteDeployment $true
+                - task: AzurePowerShell@5
+                  displayName: Start Trigger
+                  inputs:
+                    pwsh: true 
+                    azureSubscription: $(myserviceconnection)
+                    workingDirectory: $(System.DefaultWorkingDirectory)/$(TargetFolder)
+                    azurePowerShellVersion: 'LatestVersion'
+                    ScriptPath: '$(System.DefaultWorkingDirectory)/$(TargetFolder)/PrePostDeploymentScript.ps1'
+                    ScriptArguments: -armTemplate "$(System.DefaultWorkingDirectory)/$(TargetFolder)/ARMTemplateForFactory.json" -ResourceGroupName $(resourcegroup_dev) -DataFactoryName $(adfname_dev) -predeployment $false -deleteDeployment $true
                    
